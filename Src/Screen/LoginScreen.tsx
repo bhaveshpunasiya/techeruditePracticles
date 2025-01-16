@@ -28,7 +28,7 @@ const LoginScreen: React.FC = () => {
     <SafeAreaView style={LoginScreenStyle.container}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Different behavior for iOS and Android
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <CommonDualImage

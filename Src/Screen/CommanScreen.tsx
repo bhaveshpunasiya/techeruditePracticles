@@ -29,14 +29,19 @@ const LoginScreen: React.FC = (props) => {
 
   const handleNavigation = () =>{
     navigation.navigate(data?.navigateScreen)
-    navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: data?.navigateScreen, 
-          }
-        ]
-      });
+    if(data?.navigateScreen){
+      navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: data?.navigateScreen, 
+            }
+          ]
+        });
+    }
+    else{
+      navigation.goBack("")
+    }
   }
 
   return (

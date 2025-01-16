@@ -29,7 +29,8 @@ const ForgotPassword: React.FC = () => {
     }
     ToastAndroid.show("Verification code sent to your email.", ToastAndroid.SHORT);
     navigation.navigate("VerifyOtpScreen",{
-      screen:"forgotPasswordVerifed"
+      screen:"forgotPasswordVerifed",
+      email:email
     })
   };
 

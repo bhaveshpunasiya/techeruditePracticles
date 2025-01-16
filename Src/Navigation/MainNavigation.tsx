@@ -8,6 +8,7 @@ import VerifyOtpScreen from '../Screen/VerifyOtpScreen'
 import SignUpScreen from '../Screen/SignUpScreen'
 import ResetPasswordConfirm from '../Screen/ResetPasswordConfirm'
 import CommanScreen from '../Screen/CommanScreen'
+import HomeScreen from '../Screen/HomeScreen'
 
 const Stack = createStackNavigator()
 const MainNavigation = () => {
@@ -15,8 +16,9 @@ const MainNavigation = () => {
     <NavigationContainer>
         <Stack.Navigator screenOptions={{
             headerShown:false
-        }}>
+        }} initialRouteName='LoginScreen'>
             <Stack.Screen name='LoginScreen' component={LoginScreen}></Stack.Screen>
+            <Stack.Screen name='HomeScreen' component={HomeScreen}></Stack.Screen>
             <Stack.Screen name='ResetPasswordConfirm' component={ResetPasswordConfirm}></Stack.Screen>
             <Stack.Screen name='VerifyOtpScreen' component={VerifyOtpScreen}></Stack.Screen>
             <Stack.Screen name='CommanScreen' component={CommanScreen}></Stack.Screen>

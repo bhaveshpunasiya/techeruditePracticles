@@ -1,11 +1,12 @@
 import { StyleSheet } from "react-native";
 import { fontStyles } from "../utils/Fonts";
 import { verticalScale, moderateScale, horizontalScale } from "../utils/scaling";
+import colors from "../utils/Colors";
 
 export const SignUpScreenstyle = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f5f5f5',
+      backgroundColor: colors.white,
     },
     inputContainer: {
       marginBottom:verticalScale(16),
