@@ -70,7 +70,7 @@ export default LoginScreen;
 export const LoginScreenStyle = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f5f5f5',
+      backgroundColor: colors.white,
     },
     inputContainer: {
       marginBottom:verticalScale(16),
