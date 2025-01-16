@@ -10,8 +10,16 @@ import CommonText from '../Component/CommanBoldTxt';
 import CommonLinkText from '../Component/CommonLinkText';
 import { LoginScreenStyle } from '../Style/LoginScreenStyle';
 import { useNavigation } from '@react-navigation/native';
+import { sendOTPRequest } from '../store/ducks/authSlice';
+import { connect } from 'react-redux';
 
-const ForgotPassword: React.FC = () => {
+interface ForgotPasswordProps {
+  sendOTPRequest: (data:any) => void;
+  sendOTPData: any
+  sendOTPDataIsLoading:boolean
+}
+
+const ForgotPassword: React.FC<ForgotPasswordProps> = (props) => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
 
@@ -68,4 +76,14 @@ const ForgotPassword: React.FC = () => {
   );
 };
 
-export default ForgotPassword;
+const mapStateToProps = (state: any) => ({
+    sendOTPData: state.auth.sendOTPData,
+    sendOTPDataIsLoading: state.auth.sendOTPDataIsLoading,
+    sendOTPDataErrmsg: state.auth.sendOTPDataErrmsg,
+  })
+
+const mapDispatchToProps = (dispatch: any) => ({
+  sendOTPRequest: (data: any) => dispatch(sendOTPRequest(data)),
+});
+
+export default  connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);

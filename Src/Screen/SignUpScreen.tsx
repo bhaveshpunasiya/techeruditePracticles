@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, Alert, ImageBackground, Image, TouchableOpacity, SafeAreaView, ToastAndroid, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import CommanFlotingTextInput from '../Component/CommanFlotingTextInput';
 import CommonButton from '../Component/CommonButton';
@@ -12,9 +12,17 @@ import { SignUpScreenstyle } from '../Style/SignUpScreenstyle';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { validateEmail } from '../utils/validateEmail';
+import { connect } from 'react-redux';
+import { sendOTPRequest } from '../store/ducks/authSlice';
+
+interface SignupProps {
+  sendOTPRequest: (data:any) => void;
+  sendOTPData: any
+  sendOTPDataIsLoading:boolean
+}
 
 
-const SignUpScreen: React.FC = () => {
+const SignUpScreen: React.FC<SignupProps> = (props) => {
   const navigation = useNavigation()
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -22,7 +30,9 @@ const SignUpScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isChecked, setIsChecked] = useState(false);
 
-
+  useEffect(()=>{
+console.log(props.sendOTPData,"props.sendOTPData-----")
+  },[props.sendOTPData])
 
   const handleSignup = () => {
     if (!firstName || !lastName) {
@@ -42,10 +52,17 @@ const SignUpScreen: React.FC = () => {
       return;
     }
 
+    // props.sendOTPRequest({email})
     ToastAndroid.show('Sign-up Successful!', ToastAndroid.SHORT);
     navigation.navigate('VerifyOtpScreen',{
       screen:"signUpVerified",
-      email:email
+      email:email,
+      signUpdata:{
+        firstName:firstName,
+        lastName:lastName,
+        email:email,
+        password:password
+      }
 
     });
   };
@@ -106,7 +123,7 @@ const SignUpScreen: React.FC = () => {
 
           <TouchableOpacity onPress={() => setIsChecked(!isChecked)} style={SignUpScreenstyle.chekBoxWrapper}>
             <Ionicons
-              name={isChecked ? 'checkbox' : 'square-outline'}
+              name={isChecked ? 'checkbox-outline' : 'square-outline'}
               size={25}
               color={colors.primaryGrayColor}
             />
@@ -127,5 +144,15 @@ const SignUpScreen: React.FC = () => {
   );
 };
 
-export default SignUpScreen;
+const mapStateToProps = (state: any) => ({
+    sendOTPData: state.auth.sendOTPData,
+    sendOTPDataIsLoading: state.auth.sendOTPDataIsLoading,
+    sendOTPDataErrmsg: state.auth.sendOTPDataErrmsg,
+  })
+
+const mapDispatchToProps = (dispatch: any) => ({
+  sendOTPRequest: (data: any) => dispatch(sendOTPRequest(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpScreen);
 

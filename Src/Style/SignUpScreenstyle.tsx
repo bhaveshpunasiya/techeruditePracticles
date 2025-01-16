@@ -17,6 +17,6 @@ export const SignUpScreenstyle = StyleSheet.create({
     },
     bottomContainer:{justifyContent:"center",marginBottom:verticalScale(10)},
     bottomTxt:{fontSize:moderateScale(18),fontFamily:fontStyles.fontFamily },
-    chekBoxWrapper:{ flexDirection: "row", marginHorizontal: horizontalScale(10), marginTop: verticalScale(12) }
+    chekBoxWrapper:{ flexDirection: "row", marginHorizontal: horizontalScale(10), marginTop: verticalScale(2) }
    
   });

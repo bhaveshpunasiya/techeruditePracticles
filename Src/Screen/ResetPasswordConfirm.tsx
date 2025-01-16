@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ToastAndroid, SafeAreaView } from 'react-native';
 import CommanFlotingTextInput from '../Component/CommanFlotingTextInput';
 import CommonButton from '../Component/CommonButton';
@@ -9,45 +9,79 @@ import CommonDualImage from '../Component/CommonDualImage';
 import CommonText from '../Component/CommanBoldTxt';
 import { LoginScreenStyle } from '../Style/LoginScreenStyle';
 import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
+import { createNewPasswordRequest } from '../store/ducks/authSlice';
 
-const ResetPasswordConfirm: React.FC = () => {
+
+interface ResetPasswordProps {
+  createNewPasswordRequest: (data: any) => void;
+  createNewPasswordData: any
+  createNewPasswordIsLoading: boolean
+  route: any
+}
+
+
+const ResetPasswordConfirm: React.FC<ResetPasswordProps> = (props) => {
   const navigation = useNavigation();
-  
+
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  console.log(confirmPassword,"confirmPassword")
-  const [showErrore,setShowErrore] =useState(false)
-  
-  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; 
+  console.log(confirmPassword, "confirmPassword")
+  const [showErrore, setShowErrore] = useState(false)
 
-  const [isPress, setIsPress] = useState(false); 
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-  const handleSubmit = () => {
+  const [isPress, setIsPress] = useState(false);
 
-    if(newPassword == confirmPassword){
+  useEffect(() => {
+    console.log(props.createNewPasswordData, "createNewPasswordData")
+    if (isPress && props.createNewPasswordData) {
       navigation.reset({
         index: 0,
         routes: [
           {
-            name: "CommanScreen", 
+            name: "CommanScreen",
             params: {
               overlayImage: require('../Assets/Png/passwordSet.png'),
               descriptionTxt: "Reset password is done, login with new password to continue using the app.",
               navigateScreen: "LoginScreen",
               headerTxt: "Password is set",
-              navigationbtntxt:"Continue To Login"
+              navigationbtntxt: "Continue To Login"
             }
           }
         ]
       });
-      
+    }
+
+  }, [props.createNewPasswordData])
+
+  const handleSubmit = () => {
+
+    if (newPassword == confirmPassword) {
+      props.createNewPasswordRequest({ email: '', password: confirmPassword })
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "CommanScreen",
+            params: {
+              overlayImage: require('../Assets/Png/passwordSet.png'),
+              descriptionTxt: "Reset password is done, login with new password to continue using the app.",
+              navigateScreen: "LoginScreen",
+              headerTxt: "Password is set",
+              navigationbtntxt: "Continue To Login"
+            }
+          }
+        ]
+      });
+
       return
     }
-    else{
+    else {
       setShowErrore(true)
     }
-    setIsPress(true); 
-    
+    setIsPress(true);
+
     if (!newPassword || !confirmPassword) {
       ToastAndroid.show("Please fill in both fields.", ToastAndroid.SHORT);
       return;
@@ -57,8 +91,8 @@ const ResetPasswordConfirm: React.FC = () => {
     navigation.navigate("CommanScreen");
   };
 
-  const handleInputChnage=(text,setState)=>{
-    setIsPress(false); 
+  const handleInputChnage = (text, setState) => {
+    setIsPress(false);
     setState(text)
     setShowErrore(false)
   }
@@ -78,7 +112,7 @@ const ResetPasswordConfirm: React.FC = () => {
         <CommanFlotingTextInput
           label="New Password"
           value={newPassword}
-          onChangeText={(text)=>handleInputChnage(text,setNewPassword)}
+          onChangeText={(text) => handleInputChnage(text, setNewPassword)}
           placeholder=""
           secureTextEntry
           containerStyle={LoginScreenStyle.inputContainer}
@@ -88,7 +122,7 @@ const ResetPasswordConfirm: React.FC = () => {
         <CommanFlotingTextInput
           label="Confirm Password"
           value={confirmPassword}
-          onChangeText={(text)=>handleInputChnage(text,setConfirmPassword)}
+          onChangeText={(text) => handleInputChnage(text, setConfirmPassword)}
           placeholder=""
           secureTextEntry
           containerStyle={[LoginScreenStyle.inputContainer, { marginBottom: 5 }]}
@@ -105,6 +139,14 @@ const ResetPasswordConfirm: React.FC = () => {
   );
 };
 
-export default ResetPasswordConfirm;
+const mapStateToProps = (state: any) => ({
+  createNewPasswordData: state.auth.createNewPasswordData,
+  createNewPasswordIsLoading: state.auth.createNewPasswordIsLoading,
+  createNewPasswordErrmsg: state.auth.createNewPasswordErrmsg,
+})
 
-const styles = StyleSheet.create({});
+const mapDispatchToProps = (dispatch: any) => ({
+  createNewPasswordRequest: (data: any) => dispatch(createNewPasswordRequest(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ResetPasswordConfirm);

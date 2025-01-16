@@ -14,17 +14,84 @@
   import { maskEmail } from '../utils/maskEmail';
   import { formatTime } from '../utils/formatTime';
   import { VerifyOtpScreenStyle } from '../Style/VerifyOtpScreenStyle';
+import { connect } from 'react-redux';
+import { verifyOTPRequest } from '../store/ducks/authSlice';
 
-  const VerifyOtpScreen = (route) => {
+interface ForgotPasswordProps {
+  verifyOTPRequest: (data:any) => void;
+  verifyOTPData: any
+  verifyOTPDataIsLoading:boolean
+  route:any
+}
+
+
+  const VerifyOtpScreen :React.FC<ForgotPasswordProps> = (route,props) => {
     const screen = route?.route?.params?.screen ?? null;
     const email = route?.route?.params?.email ?? null;
+    const signUpdata = route?.route?.params?.signUpdata ?? null;
+
     const navigation = useNavigation();
     const [otp, setOtp] = useState('');
 
     const [timer, setTimer] = useState(2 * 60 + 33);
     const [isTimerActive, setIsTimerActive] = useState(true);
+    const[isPress,setIsPress] = useState(false)
 
     const otpInput = useRef(null);
+
+    useEffect(()=>{
+      if(isPress && props.verifyOTPData){
+        if (screen === "forgotPasswordVerifed") {
+          navigation.navigate('ResetPasswordConfirm');
+        } else if (screen === "signUpVerified") {
+          if (otp == "1111") {
+            console.log("match");
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "CommanScreen",
+                  params: {
+                    overlayImage: require('../Assets/Png/passwordSet.png'),
+                    descriptionTxt: "Happy to say everything went smoothly. Start with Tradesmen for great experience...",
+                    navigateScreen: "LoginScreen",
+                    headerTxt: "OTP is verified...",
+                    navigationbtntxt: "Continue to App"
+                  }
+                }
+              ]
+            });
+          } else if (otp != "11111") {
+            navigation.navigate("CommanScreen", {
+              overlayImage: require('../Assets/Png/OtpInvalid.png'),
+              descriptionTxt: "Please enter valid data, code is incorrect.",
+              navigateScreen: "",
+              headerTxt: "OTP is incorrect",
+              navigationbtntxt: " Try Again",
+            });
+            
+          } else {
+            navigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "CommanScreen",
+                  params: {
+                    overlayImage: require('../Assets/Png/SomethingWrong.png'),
+                    descriptionTxt: "Taking too much time, Please check your internet connection.",
+                    navigateScreen: "SignUpScreen",
+                    headerTxt: "Something went wrong!",
+                    navigationbtntxt: " Try Again"
+                  }
+                }
+              ]
+            });
+          }
+        }
+      }
+      console.log(props.verifyOTPData,"props.verifyOTPData----")
+
+    },[props.verifyOTPData])
 
     useEffect(() => {
       if (isTimerActive) {
@@ -50,6 +117,12 @@
     };
 
     const handleSubmit = () => {
+
+      setIsPress(true)
+
+      // props.verifyOTPRequest({})
+      // console.log(props.verifyOTPRequest({}))
+
       if (screen === "forgotPasswordVerifed") {
         navigation.navigate('ResetPasswordConfirm');
       } else if (screen === "signUpVerified") {
@@ -143,4 +216,14 @@
     );
   };
 
-  export default VerifyOtpScreen;
+const mapStateToProps = (state: any) => ({
+    verifyOTPData: state.auth.verifyOTPData,
+    verifyOTPDataIsLoading: state.auth.verifyOTPDataIsLoading,
+    verifyOTPDataErrmsg: state.auth.verifyOTPDataErrmsg,
+  })
+
+const mapDispatchToProps = (dispatch: any) => ({
+  verifyOTPRequest: (data: any) => dispatch(verifyOTPRequest(data)),
+});
+
+  export default connect(mapStateToProps, mapDispatchToProps)(VerifyOtpScreen);

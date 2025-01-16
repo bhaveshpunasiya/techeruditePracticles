@@ -9,14 +9,19 @@ import SignUpScreen from '../Screen/SignUpScreen'
 import ResetPasswordConfirm from '../Screen/ResetPasswordConfirm'
 import CommanScreen from '../Screen/CommanScreen'
 import HomeScreen from '../Screen/HomeScreen'
+import { useSelector } from 'react-redux'
 
 const Stack = createStackNavigator()
+
 const MainNavigation = () => {
+
+  const data = useSelector((state:any)=>state.auth.loginReqData)
+
   return (
     <NavigationContainer>
         <Stack.Navigator screenOptions={{
             headerShown:false
-        }} initialRouteName='LoginScreen'>
+        }} initialRouteName= {data?.data?.token ?"HomeScreen":'LoginScreen'} >
             <Stack.Screen name='LoginScreen' component={LoginScreen}></Stack.Screen>
             <Stack.Screen name='HomeScreen' component={HomeScreen}></Stack.Screen>
             <Stack.Screen name='ResetPasswordConfirm' component={ResetPasswordConfirm}></Stack.Screen>

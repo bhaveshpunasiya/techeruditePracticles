@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert, ImageBackground, Image, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Button, Alert, ImageBackground, Image, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, ScrollView, Platform, ToastAndroid } from 'react-native';
 import CommanFlotingTextInput from '../Component/CommanFlotingTextInput';
 import CommonButton from '../Component/CommonButton';
 import colors from '../utils/Colors';
@@ -10,18 +10,48 @@ import CommonText from '../Component/CommanBoldTxt';
 import CommonLinkText from '../Component/CommonLinkText';
 import { LoginScreenStyle } from '../Style/LoginScreenStyle';
 import { useNavigation } from '@react-navigation/native';
+import { connect, useDispatch } from 'react-redux';
+import { loginReq } from '../store/ducks/authSlice';
 
-const LoginScreen: React.FC = () => {
+interface LoginProps {
+  loginReq: (data:any) => void;
+  loginReqData: any
+  loginReqIsLoading:boolean
+}
+
+const LoginScreen: React.FC<LoginProps> = (props) => {
   const navigation = useNavigation();
+  const[isPress,setIsPress] = useState(false)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(()=>{
+    if(isPress && props.loginReqData?.success){
+      ToastAndroid.show(props.loginReqData?.message,10)
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: "HomeScreen"
+          }
+        ]
+      });
+    }
+    else if(isPress && props.loginReqData?.success == false){
+      ToastAndroid.show(props.loginReqData?.message,10)
+
+    }
+  },[props.loginReqData])
+
   const handleLogin = () => {
+    setIsPress(true)
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
+      ToastAndroid.show("Please enter both email and password.",10)
       return;
     }
-    Alert.alert('Login Successful', `Email: ${email}`);
+    else{
+      props.loginReq({email:email,password:password})
+    }
   };
 
   return (
@@ -56,7 +86,7 @@ const LoginScreen: React.FC = () => {
               borderBottomColor={colors.primaryGrayColor}
             />
             <CommonLinkText text={'Forgot password?'} onPress={() => navigation.navigate("ForgotPassword")} />
-            <CommonButton title={'Login'} onPress={handleLogin} />
+            <CommonButton loading={props.loginReqIsLoading} title={'Login'} onPress={handleLogin} />
           </View>
           <View style={LoginScreenStyle.bottomContainer}>
             <Text style={LoginScreenStyle.bottomTxt}>Don’t have an account? </Text>
@@ -72,4 +102,16 @@ const LoginScreen: React.FC = () => {
   );
 };
 
-export default LoginScreen;
+const mapStateToProps = (state: any) => {
+  return {
+    loginReqData: state.auth.loginReqData,
+    loginReqIsLoading: state.auth.loginReqIsLoading,
+    loginReqDataErrmsg: state.auth.loginReqDataErrmsg,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  loginReq: (data: any) => dispatch(loginReq(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)( LoginScreen);
