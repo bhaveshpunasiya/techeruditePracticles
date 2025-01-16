@@ -105,7 +105,6 @@ const authSlice = createSlice({
     // login Us --------------------------------------------------------
 
     loginReq: (state, action) => {
-      console.log("first")
     },
     loginReqSuccess: (state, action) => ({
       ...state,
